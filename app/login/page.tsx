@@ -20,23 +20,6 @@ export default function LoginPage() {
   }
 
   return (
-    <div style={{ background:"#f2f2f2", minHeight:"100vh" }}>
-      
-      <div
-        className={montserrat.className}
-        style={{
-          background:"#FADADD",
-          padding:"6px 40px",
-          display:"flex",
-          alignItems:"center"
-        }}
-      >
-        <img 
-          src="/logo.h.png" 
-          alt="Student Planner"
-          style={{ height:"100px", width:"150px" }}
-        />
-      </div>
 
       <div style={{
         display:"flex",
@@ -86,7 +69,6 @@ export default function LoginPage() {
 
         </div>
       </div>
-    </div>
   )
 }
 
