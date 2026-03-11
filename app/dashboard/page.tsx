@@ -4,10 +4,13 @@
 //hook que permite na navegar entre pages
 import { useRouter } from "next/navigation"
 
+import DisciplineCard from "../components/DisciplineCard"
+//component
+
 export default function DashboardPage() {
   const router = useRouter()
 
-    //função q vai para o profile
+  //função q vai para o profile
   function goToProfile() {
     router.push("/profile")
   }
@@ -35,8 +38,32 @@ export default function DashboardPage() {
 
       </div>
 
-      <div className="mt-24 text-center text-gray-500 text-lg">
-        Ainda estamos trabalhando nisso.
+      <div className="mt-20 ml-16">
+
+        <h3 className="text-xl mb-6 font-semibold text-[#D84E7C]">
+          Disciplinas em andamento
+        </h3>
+
+        <div className="flex gap-6 flex-wrap">
+
+          <DisciplineCard name="Administração da Informação" />
+
+          <DisciplineCard name="Processos de Software" />
+
+          <DisciplineCard name="Projeto e Arquitetura de Software" />
+
+          <DisciplineCard name="Sistemas Operacionais" />
+
+          <DisciplineCard name="Gerenciamento de Projeto de Software" />
+
+          <DisciplineCard name="Psicologia E Gestão De Pessoas Em TI" />
+
+        </div>
+
+      </div>
+      
+       <div className=" w-[1147px] h-[308px] rounded-[12px] p-4  border-4 border-[#D84E7C]">
+
       </div>
 
     </div>
