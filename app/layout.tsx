@@ -1,6 +1,7 @@
+//define infos da page
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import { Montserrat } from "next/font/google";
+//otimização das fontes do next
+import { Geist, Geist_Mono, Montserrat } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -31,24 +32,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        style={{ background: "#f2f2f2", minHeight: "100vh" }}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#f2f2f2] min-h-screen`}
       >
 
-        {/* Topbar */}
         <div
-          className={montserrat.className}
-          style={{
-            background: "#FADADD",
-            padding: "6px 40px",
-            display: "flex",
-            alignItems: "center"
-          }}
+          className={`${montserrat.className} bg-[#FADADD] px-10 py-[6px] flex items-center`}
         >
           <img
             src="/logo.h.png"
             alt="Student Planner"
-            style={{ height: "100px", width: "150px" }}
+            className="h-[100px] w-[150px]"
           />
         </div>
 
