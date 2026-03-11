@@ -3,7 +3,7 @@
 
 //hook que permite na navegar entre pages
 import { useRouter } from "next/navigation"
-
+import { CirclePlus } from "lucide-react"
 import DisciplineCard from "../components/DisciplineCard"
 //component
 
@@ -40,30 +40,33 @@ export default function DashboardPage() {
 
       <div className="mt-20 ml-16">
 
-        <h3 className="text-xl mb-6 font-semibold text-[#D84E7C]">
-          Disciplinas em andamento
-        </h3>
+        <div className=" w-[1147px] h-[290px] rounded-[12px] p-10  border-2 border-pink">
 
-        <div className="flex gap-6 flex-wrap">
+          <div className="flex justify-between">
 
-          <DisciplineCard name="Administração da Informação" />
+            <h3 className="text-xl mb-6 font-semibold text-pink">
+              Disciplinas em andamento
+            </h3>
 
-          <DisciplineCard name="Processos de Software" />
+            <CirclePlus size={30} className="text-pink" />
+          </div>
 
-          <DisciplineCard name="Projeto e Arquitetura de Software" />
+          <div className="flex gap-6 flex-wrap">
 
-          <DisciplineCard name="Sistemas Operacionais" />
+            <DisciplineCard name="Administração da Informação" />
 
-          <DisciplineCard name="Gerenciamento de Projeto de Software" />
+            <DisciplineCard name="Processos de Software" />
 
-          <DisciplineCard name="Psicologia E Gestão De Pessoas Em TI" />
+            <DisciplineCard name="Projeto e Arquitetura de Software" />
 
+            <DisciplineCard name="Sistemas Operacionais" />
+
+            <DisciplineCard name="Gerenciamento de Projeto de Software" />
+
+            <DisciplineCard name="Psicologia E Gestão De Pessoas Em TI" />
+
+          </div>
         </div>
-
-      </div>
-      
-       <div className=" w-[1147px] h-[308px] rounded-[12px] p-4  border-4 border-[#D84E7C]">
-
       </div>
 
     </div>

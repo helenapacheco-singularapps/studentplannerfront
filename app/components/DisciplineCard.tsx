@@ -6,9 +6,9 @@ type Props = {
 
 export default function DisciplineCard({ name }: Props) {
   return (
-    <div className="bg-gray-100 w-[151px] h-[150px] rounded-[12px] p-4 flex flex-col justify-between">
+    <div className="bg-gray-200 w-[151px] h-[150px] rounded-[12px] p-4 flex flex-col justify-between">
 
-      <div className="flex justify-between text-[#D84E7C]">
+      <div className="flex justify-between text-pink">
         <Pencil size={20} />
         <Trash2 size={20} />
       </div>
