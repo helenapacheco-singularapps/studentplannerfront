@@ -69,33 +69,36 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
-      <div className="mt-6 ml-16">
+      <div className="flex justify-end mt-6 mr-16 ">
 
-        <div className=" w-200 h-60 rounded-xl p-8  border-2 border-pink">
+        <div className="w-200 h-60 rounded-xl p-8 border-2 border-pink">
 
           <div className="flex justify-between">
 
-            <h3 className="text-xl mb-2 font-semibold text-pink">
-              Disciplinas em andamento
+            <h3 className="text-xl mb-1 font-semibold text-pink">
+              Planejamento disciplinas próximo semestre
             </h3>
+
           </div>
 
           <div className="flex gap-6 flex-wrap">
 
-            <DisciplineCard name="Administração da Informação" size={"sm"} />
+            <DisciplineCard name="Administração da Informação" size="sm" />
 
-            <DisciplineCard name="Processos de Software" size={"sm"} />
+            <DisciplineCard name="Processos de Software" size="sm" />
 
-            <DisciplineCard name="Projeto e Arquitetura de Software" size={"sm"} />
+            <DisciplineCard name="Projeto e Arquitetura de Software" size="sm" />
 
-            <DisciplineCard name="Sistemas Operacionais" size={"sm"} />
+            <DisciplineCard name="Sistemas Operacionais" size="sm" />
 
-            <DisciplineCard name="Gerenciamento de Projeto de Software" size={"sm"} />
+            <DisciplineCard name="Gerenciamento de Projeto de Software" size="sm" />
 
-            <DisciplineCard name="Psicologia E Gestão De Pessoas Em TI" size={"sm"} />
+            <DisciplineCard name="Psicologia E Gestão De Pessoas Em TI" size="sm" />
 
           </div>
+
         </div>
+
       </div>
 
     </div>
