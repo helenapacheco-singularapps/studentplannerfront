@@ -24,7 +24,7 @@ export default function LoginPage() {
 
   return (
     <div className="flex justify-center mt-24">
-      <div className="w-[350px]">
+      <div className="w-87.5">
 
         <h1
           className={`${montserrat.className} text-center mb-10 text-[40px]`}
@@ -65,4 +65,3 @@ export default function LoginPage() {
 }
 
 
- 

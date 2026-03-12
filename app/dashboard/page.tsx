@@ -4,7 +4,6 @@
 //hook que permite na navegar entre pages
 import { useRouter } from "next/navigation"
 import { CirclePlus } from "lucide-react"
-import Image from "next/image";
 import DisciplineCard from "../components/DisciplineCard"
 //component
 
@@ -24,7 +23,7 @@ export default function DashboardPage() {
         <img
           src="/me.jpg"
           onClick={goToProfile}
-          className="w-[85px] h-[85px] rounded-full border-4 border-pink object-cover cursor-pointer"
+          className="w-21.25 h-21.25 rounded-full border-4 border-pink object-cover cursor-pointer"
         />
 
         <div>
@@ -42,7 +41,7 @@ export default function DashboardPage() {
 
       <div className="mt-7 ml-16">
 
-        <div className=" w-[990px] h-[240px] rounded-[12px] p-8  border-2 border-pink">
+        <div className=" w-247.5 h-60 rounded-xl p-8  border-2 border-pink">
 
           <div className="flex justify-between">
 
@@ -55,17 +54,45 @@ export default function DashboardPage() {
 
           <div className="flex gap-6 flex-wrap">
 
-            <DisciplineCard name="Administração da Informação" />
+            <DisciplineCard name="Administração da Informação" size={"md"} />
 
-            <DisciplineCard name="Processos de Software" />
+            <DisciplineCard name="Processos de Software" size={"md"} />
 
-            <DisciplineCard name="Projeto e Arquitetura de Software" />
+            <DisciplineCard name="Projeto e Arquitetura de Software" size={"md"} />
 
-            <DisciplineCard name="Sistemas Operacionais" />
+            <DisciplineCard name="Sistemas Operacionais" size={"md"} />
 
-            <DisciplineCard name="Gerenciamento de Projeto de Software" />
+            <DisciplineCard name="Gerenciamento de Projeto de Software" size={"md"} />
 
-            <DisciplineCard name="Psicologia E Gestão De Pessoas Em TI" />
+            <DisciplineCard name="Psicologia E Gestão De Pessoas Em TI" size={"md"} />
+
+          </div>
+        </div>
+      </div>
+      <div className="mt-6 ml-16">
+
+        <div className=" w-200 h-60 rounded-xl p-8  border-2 border-pink">
+
+          <div className="flex justify-between">
+
+            <h3 className="text-xl mb-2 font-semibold text-pink">
+              Disciplinas em andamento
+            </h3>
+          </div>
+
+          <div className="flex gap-6 flex-wrap">
+
+            <DisciplineCard name="Administração da Informação" size={"sm"} />
+
+            <DisciplineCard name="Processos de Software" size={"sm"} />
+
+            <DisciplineCard name="Projeto e Arquitetura de Software" size={"sm"} />
+
+            <DisciplineCard name="Sistemas Operacionais" size={"sm"} />
+
+            <DisciplineCard name="Gerenciamento de Projeto de Software" size={"sm"} />
+
+            <DisciplineCard name="Psicologia E Gestão De Pessoas Em TI" size={"sm"} />
 
           </div>
         </div>

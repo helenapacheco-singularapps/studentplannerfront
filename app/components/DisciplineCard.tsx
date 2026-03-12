@@ -2,11 +2,12 @@ import { Pencil, Trash2 } from "lucide-react"
 
 type Props = {
   name: string
+  size: "sm" | "md"
 }
 
-export default function DisciplineCard({ name }: Props) {
+export default function DisciplineCard({ name, size = "md" }: Props) {
   return (
-    <div className="bg-gray-200 w-[130px] h-[130px] rounded-[12px] p-4 flex flex-col justify-between">
+    <div className={`bg-gray-200 rounded-xl p-4 flex flex-col justify-between ${size === "md" ? "w-32.5 h-32.5" : "w-25 h-25"}`}>
 
       <div className="flex justify-between text-pink">
         <Pencil size={15} />
