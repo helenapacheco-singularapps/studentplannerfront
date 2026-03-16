@@ -22,6 +22,10 @@ export default function DashboardPage() {
   const [selectedDiscipline, setSelectedDiscipline] = useState<string | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
+  const [deleteDiscipline, setDeleteDiscipline] = useState<string | null>(null)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
+
   //função q vai para o profile
   function goToProfile() {
     router.push("/profile")
@@ -30,6 +34,11 @@ export default function DashboardPage() {
   function handleEdit(name: string) {
     setSelectedDiscipline(name)
     setIsModalOpen(true)
+  }
+
+  function handleDelete(name: string) {
+    setDeleteDiscipline(name)
+    setIsDeleteModalOpen(true)
   }
 
   return (
@@ -71,12 +80,12 @@ export default function DashboardPage() {
 
           <div className="flex gap-6 flex-wrap">
 
-            <DisciplineCard name="Administração da Informação" size={"md"} onEdit={handleEdit} />
-            <DisciplineCard name="Processos de Software" size={"md"} onEdit={handleEdit} />
-            <DisciplineCard name="Projeto e Arquitetura de Software" size={"md"} onEdit={handleEdit} />
-            <DisciplineCard name="Sistemas Operacionais" size={"md"} onEdit={handleEdit} />
-            <DisciplineCard name="Gerenciamento de Projeto de Software" size={"md"} onEdit={handleEdit} />
-            <DisciplineCard name="Psicologia E Gestão De Pessoas Em TI" size={"md"} onEdit={handleEdit} />
+            <DisciplineCard name="Administração da Informação" size={"md"} onEdit={handleEdit} onDelete={handleDelete} />
+            <DisciplineCard name="Processos de Software" size={"md"} onEdit={handleEdit} onDelete={handleDelete} />
+            <DisciplineCard name="Projeto e Arquitetura de Software" size={"md"} onEdit={handleEdit} onDelete={handleDelete} />
+            <DisciplineCard name="Sistemas Operacionais" size={"md"} onEdit={handleEdit} onDelete={handleDelete} />
+            <DisciplineCard name="Gerenciamento de Projeto de Software" size={"md"} onEdit={handleEdit} onDelete={handleDelete} />
+            <DisciplineCard name="Psicologia E Gestão De Pessoas Em TI" size={"md"} onEdit={handleEdit} onDelete={handleDelete} />
 
           </div>
         </div>
@@ -96,19 +105,40 @@ export default function DashboardPage() {
 
           <div className="flex gap-6 flex-wrap ">
 
-            <DisciplineCard name="Administração da Informação" size="sm" onEdit={handleEdit} />
-            <DisciplineCard name="Processos de Software" size="sm" onEdit={handleEdit} />
-            <DisciplineCard name="Projeto e Arquitetura de Software" size="sm" onEdit={handleEdit} />
-            <DisciplineCard name="Sistemas Operacionais" size="sm" onEdit={handleEdit} />
-            <DisciplineCard name="Gerenciamento de Projeto de Software" size="sm" onEdit={handleEdit} />
-            <DisciplineCard name="Psicologia E Gestão De Pessoas Em TI" size="sm" onEdit={handleEdit} />
+            <DisciplineCard name="Administração da Informação" size="sm" onEdit={handleEdit} onDelete={handleDelete} />
+            <DisciplineCard name="Processos de Software" size="sm" onEdit={handleEdit} onDelete={handleDelete} />
+            <DisciplineCard name="Projeto e Arquitetura de Software" size="sm" onEdit={handleEdit} onDelete={handleDelete} />
+            <DisciplineCard name="Sistemas Operacionais" size="sm" onEdit={handleEdit} onDelete={handleDelete} />
+            <DisciplineCard name="Gerenciamento de Projeto de Software" size="sm" onEdit={handleEdit} onDelete={handleDelete} />
+            <DisciplineCard name="Psicologia E Gestão De Pessoas Em TI" size="sm" onEdit={handleEdit} onDelete={handleDelete} />
 
           </div>
 
         </div>
 
       </div>
+      <div className="mt-6 ml-16">
 
+        <div className="w-120 h-60 rounded-xl p-8 border-2 border-pink flex flex-col justify-between">
+
+          <h3 className="text-xl font-semibold text-pink leading-snug">
+            Visualizar todas as disciplinas do curso e seu status
+          </h3>
+
+          <div className="flex justify-center">
+
+            <button
+              onClick={() => router.push("/disciplines")}
+              className="bg-pink text-white px-10 py-2 rounded-lg"
+            >
+              VISUALIZAR
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
 
@@ -139,7 +169,7 @@ export default function DashboardPage() {
 
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="bg-pink-200 px-4 py-2 rounded"
+                className="bg-pinkly px-4 py-2 rounded"
               >
                 Cancel
               </button>
@@ -149,6 +179,88 @@ export default function DashboardPage() {
                 className="bg-pink text-white px-4 py-2 rounded"
               >
                 Save
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+      )}
+
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
+
+          <div className="bg-white rounded-xl p-6 w-[420px] relative">
+
+            <button
+              onClick={() => setIsDeleteModalOpen(false)}
+              className="absolute right-4 top-4 text-gray-500"
+            >
+              <X size={20} />
+            </button>
+
+            <h2 className="text-lg font-semibold mb-2">
+              Excluir
+            </h2>
+
+            <p className="text-gray-500 mb-6">
+              Você deseja excluir esta disciplina?
+            </p>
+
+            <div className="flex justify-end gap-3">
+
+              <button
+                onClick={() => setIsDeleteModalOpen(false)}
+                className="bg-pinkly px-4 py-2 rounded"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={() => {
+                  setIsDeleteModalOpen(false)
+                  setIsSuccessModalOpen(true)
+                }}
+                className="bg-pink text-white px-4 py-2 rounded"
+              >
+                Confirm
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+      )}
+
+      {isSuccessModalOpen && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
+
+          <div className="bg-white rounded-xl p-6 w-[420px] relative">
+
+            <button
+              onClick={() => setIsSuccessModalOpen(false)}
+              className="absolute right-4 top-4 text-gray-500"
+            >
+              <X size={20} />
+            </button>
+
+            <h2 className="text-lg font-semibold mb-2">
+              Sucesso
+            </h2>
+
+            <p className="text-gray-500 mb-6">
+              A disciplina foi excluída com sucesso!
+            </p>
+
+            <div className="flex justify-end">
+
+              <button
+                onClick={() => setIsSuccessModalOpen(false)}
+                className="bg-pinkly px-4 py-2 rounded"
+              >
+                Close
               </button>
 
             </div>
