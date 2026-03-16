@@ -3,14 +3,15 @@ import { Pencil, Trash2 } from "lucide-react"
 type Props = {
   name: string
   size: "sm" | "md"
+  onEdit: (name: string) => void
 }
 
-export default function DisciplineCard({ name, size = "md" }: Props) {
+export default function DisciplineCard({ name, size = "md", onEdit }: Props) {
   return (
     <div className={`bg-gray-200 rounded-xl p-4 flex flex-col justify-between ${size === "md" ? "w-32.5 h-32.5" : "w-25 h-25"}`}>
 
       <div className="flex justify-between text-pink">
-        <Pencil size={15} />
+        <Pencil size={15} className="cursor-pointer" onClick={() => onEdit(name)} />
         <Trash2 size={15} />
       </div>
 
