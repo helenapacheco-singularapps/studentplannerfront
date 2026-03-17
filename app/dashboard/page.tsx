@@ -25,6 +25,7 @@ export default function DashboardPage() {
   const [deleteDiscipline, setDeleteDiscipline] = useState<string | null>(null)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
 
   //função q vai para o profile
   function goToProfile() {
@@ -75,7 +76,7 @@ export default function DashboardPage() {
               Disciplinas em andamento
             </h3>
 
-            <CirclePlus size={30} className="text-pink" />
+            <CirclePlus size={30} className="text-pink cursor-pointer" onClick={() => setIsAddModalOpen(true)} />
           </div>
 
           <div className="flex gap-6 flex-wrap">
@@ -91,55 +92,47 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="flex justify-end mt-6 mr-16 ">
 
-        <div className="w-200 h-60 rounded-xl p-8 border-2 border-pink">
+      <div className="flex mt-6 ml-16 gap-10">
 
-          <div className="flex justify-between">
-
-            <h3 className="text-xl mb-1 font-semibold text-pink">
-              Planejamento disciplinas próximo semestre
-            </h3>
-
-          </div>
-
-          <div className="flex gap-6 flex-wrap ">
-
-            <DisciplineCard name="Administração da Informação" size="sm" onEdit={handleEdit} onDelete={handleDelete} />
-            <DisciplineCard name="Processos de Software" size="sm" onEdit={handleEdit} onDelete={handleDelete} />
-            <DisciplineCard name="Projeto e Arquitetura de Software" size="sm" onEdit={handleEdit} onDelete={handleDelete} />
-            <DisciplineCard name="Sistemas Operacionais" size="sm" onEdit={handleEdit} onDelete={handleDelete} />
-            <DisciplineCard name="Gerenciamento de Projeto de Software" size="sm" onEdit={handleEdit} onDelete={handleDelete} />
-            <DisciplineCard name="Psicologia E Gestão De Pessoas Em TI" size="sm" onEdit={handleEdit} onDelete={handleDelete} />
-
-          </div>
-
-        </div>
-
-      </div>
-      <div className="mt-6 ml-16">
-
-        <div className="w-120 h-60 rounded-xl p-8 border-2 border-pink flex flex-col justify-between">
-
+        <div className="w-100 h-60 rounded-xl p-8 border-2 border-pink flex flex-col justify-between">
           <h3 className="text-xl font-semibold text-pink leading-snug">
             Visualizar todas as disciplinas do curso e seu status
           </h3>
 
           <div className="flex justify-center">
-
             <button
               onClick={() => router.push("/disciplines")}
               className="bg-pink text-white px-10 py-2 rounded-lg"
             >
               VISUALIZAR
             </button>
-
           </div>
+        </div>
 
+        <div className="w-220 h-60 rounded-xl p-8 border-2 border-pink">
+          <h3 className="text-xl mb-1 font-semibold text-pink">
+            Planejamento disciplinas próximo semestre
+          </h3>
+
+          <div className="flex gap-6 flex-wrap">
+
+            {/* instanciand um componente e passando infos pra ele */}
+            <DisciplineCard name="Administração da Informação" size="sm" onEdit={handleEdit} onDelete={handleDelete} />
+            <DisciplineCard name="Processos de Software" size="sm" onEdit={handleEdit} onDelete={handleDelete} />
+            <DisciplineCard name="Projeto e Arquitetura de Software" size="sm" onEdit={handleEdit} onDelete={handleDelete} />
+            <DisciplineCard name="Sistemas Operacionais" size="sm" onEdit={handleEdit} onDelete={handleDelete} />
+            <DisciplineCard name="Gerenciamento de Projeto de Software" size="sm" onEdit={handleEdit} onDelete={handleDelete} />
+            <DisciplineCard name="Psicologia E Gestão De Pessoas Em TI" size="sm" onEdit={handleEdit} onDelete={handleDelete} />
+          </div>
         </div>
 
       </div>
+
+      {/*renderização condicional */}
       {isModalOpen && (
+
+        //fundo escuro overlay
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
 
           <div className="bg-white rounded-xl p-8 w-125 relative">
@@ -191,7 +184,7 @@ export default function DashboardPage() {
       {isDeleteModalOpen && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
 
-          <div className="bg-white rounded-xl p-6 w-[420px] relative">
+          <div className="bg-white rounded-xl p-6 w-105 relative">
 
             <button
               onClick={() => setIsDeleteModalOpen(false)}
@@ -237,7 +230,7 @@ export default function DashboardPage() {
       {isSuccessModalOpen && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
 
-          <div className="bg-white rounded-xl p-6 w-[420px] relative">
+          <div className="bg-white rounded-xl p-6 w-105 relative">
 
             <button
               onClick={() => setIsSuccessModalOpen(false)}
@@ -269,6 +262,64 @@ export default function DashboardPage() {
 
         </div>
       )}
+
+      {isAddModalOpen && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
+          <div className="bg-white rounded-xl p-8 w-125 relative">
+            <button
+              onClick={() => setIsAddModalOpen(false)}
+              className="absolute right-4 top-4 text-gray-500"
+            >
+              <X size={20} />
+            </button>
+
+            <h2 className="text-2xl font-semibold text-pink mb-6">
+              Adicionar nova disciplina
+            </h2>
+
+            <div className="flex flex-col gap-4">
+
+              <div>
+                <p className="text-sm mb-1">Nome da disciplina</p>
+                <input className="bg-gray-100 rounded p-2 w-full" />
+              </div>
+
+              <div>
+                <p className="text-sm mb-1">Quantidade de créditos</p>
+                <input className="bg-gray-100 rounded p-2 w-full" />
+              </div>
+
+              <div>
+                <p className="text-sm mb-1">Em qual semestre irá cursar</p>
+                <input className="bg-gray-100 rounded p-2 w-full" />
+              </div>
+
+            </div>
+
+            <div className="flex justify-end gap-4 mt-6">
+
+              <button
+                onClick={() => setIsAddModalOpen(false)}
+                className="bg-pinkly px-4 py-2 rounded"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={() => setIsAddModalOpen(false)}
+                className="bg-pink text-white px-4 py-2 rounded"
+              >
+                Save
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+      )}
+
+
 
     </div>
   )
