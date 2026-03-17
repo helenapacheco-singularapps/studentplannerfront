@@ -44,7 +44,7 @@ export default function RootLayout({
             alt="Student Planner"
             width={150}
             height={100}
-            className="h-[100px] w-[150px]"
+            className="h-25 w-37.5"
           />
         </div>
 

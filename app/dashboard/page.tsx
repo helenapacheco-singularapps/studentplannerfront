@@ -6,8 +6,9 @@ import { useRouter } from "next/navigation"
 import { CirclePlus, X } from "lucide-react"
 import DisciplineCard from "../components/DisciplineCard"
 import { useState } from "react"
-//component
+import Image from "next/image"
 
+//component
 export default function DashboardPage() {
   const router = useRouter()
 
@@ -47,10 +48,13 @@ export default function DashboardPage() {
 
       <div className="flex items-center gap-3 mt-6 ml-16">
 
-        <img
+        <Image
           src="/me.jpg"
+          alt="Profile"
+          width={85}
+          height={85}
           onClick={goToProfile}
-          className="w-21.25 h-21.25 rounded-full border-4 border-pink object-cover cursor-pointer"
+          className="rounded-full border-4 border-pink object-cover cursor-pointer"
         />
 
         <div>

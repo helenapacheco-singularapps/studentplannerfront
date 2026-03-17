@@ -16,18 +16,16 @@ export default function DisciplineCard({ name, size = "md", onEdit, onDelete }: 
         <Trash2 size={15} className="cursor-pointer" onClick={() => onDelete(name)} />
       </div>
 
-      <div className="text-center">
-
-        <h3 className="text-sm text-black font-semibold leading-tight">
+      <div className="text-center w-full">
+        {/* multi-line truncation  */}
+        <h3 className="text-sm text-black font-semibold leading-tight line-clamp-2">
           {name}
         </h3>
-
         <p className="text-xs text-black mt-1">
           Ver desempenho
         </p>
 
       </div>
-
     </div>
   )
 }
