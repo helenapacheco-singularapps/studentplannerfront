@@ -8,10 +8,11 @@ import DisciplineCard from "../components/DisciplineCard"
 import { useState } from "react"
 import Image from "next/image"
 
-//component
+
 export default function DashboardPage() {
   const router = useRouter()
 
+  //USEEFFECT!!!!!!!!
   const profile =
     typeof window !== "undefined"
       ? JSON.parse(localStorage.getItem("profile") || "{}")
@@ -23,6 +24,7 @@ export default function DashboardPage() {
   const [selectedDiscipline, setSelectedDiscipline] = useState<string | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
+  //DELETEDISCIPLINE NAO ESTA SENDO USADO!!!!!!!!!!!
   const [deleteDiscipline, setDeleteDiscipline] = useState<string | null>(null)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
@@ -69,7 +71,7 @@ export default function DashboardPage() {
 
       </div>
 
-
+      {/* COMPONETE!!!!!!!!!!!!*/}
       <div className="mt-7 ml-16">
 
         <div className=" w-247.5 h-60 rounded-xl p-8  border-2 border-pink">
@@ -133,7 +135,7 @@ export default function DashboardPage() {
 
       </div>
 
-      {/*renderização condicional */}
+      {/*renderização condicional COMPONENTE!!!!!!!!!!!!!!!!!!!!!*/}
       {isModalOpen && (
 
         //fundo escuro overlay

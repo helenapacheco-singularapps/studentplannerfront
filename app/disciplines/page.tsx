@@ -89,7 +89,6 @@ export default function DisciplinesPage() {
                             {semester.subjects.map((sub, i) => (
                                 <div key={i} className="flex justify-between items-center text-sm">
 
-                                    {/* 🔥 ajuste importante aqui */}
                                     <span className="text-gray-800 font-semibold truncate flex-1 min-w-0 mr-2">
                                         {sub.name}
                                     </span>
@@ -107,7 +106,7 @@ export default function DisciplinesPage() {
 
             </div>
 
-            <div className="flex justify-center pb-15">
+            <div className="flex justify-center pb-20">
                 <button
                     onClick={() => router.push("/dashboard")}
                     className="bg-pink text-white px-10 py-2 rounded-lg"
