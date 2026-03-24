@@ -1,7 +1,9 @@
 "use client"
 
+import { get } from "http"
 import { CircleArrowLeft, CircleArrowRight } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { SetStateAction, useEffect, useState } from "react"
 
 const semesters = [
     {
@@ -66,6 +68,19 @@ function StatusTag({ status }: { status: string }) {
 
 export default function DisciplinesPage() {
     const router = useRouter()
+    const [disciplines, setDisciplines] = useState<SetStateAction<[]>>([])
+    const [loading, setLoading] = useState(false)
+
+    useEffect(() => {
+        async function getDisciplines() {
+            setLoading(true)
+
+            const result = await fetch("api/disciplines")
+            setDisciplines(result)
+            setLoading(false)
+        }
+        getDisciplines()
+    }, [])
 
     return (
         <div className="min-h-screen bg-white flex flex-col">
@@ -76,6 +91,9 @@ export default function DisciplinesPage() {
                     <CircleArrowLeft size={36} />
                 </button>
 
+                {!loading && (
+                    <p>Carregando disciplinas...</p>
+                )}
                 {semesters.map((semester, index) => (
                     <div
                         key={index}
@@ -89,7 +107,7 @@ export default function DisciplinesPage() {
                             {semester.subjects.map((sub, i) => (
                                 <div key={i} className="flex justify-between items-center text-sm">
 
-                                    {/* 🔥 ajuste importante aqui */}
+
                                     <span className="text-gray-800 font-semibold truncate flex-1 min-w-0 mr-2">
                                         {sub.name}
                                     </span>
@@ -118,4 +136,6 @@ export default function DisciplinesPage() {
 
         </div>
     )
+
+
 }
