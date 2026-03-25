@@ -2,10 +2,12 @@ const BACKEND_URL = "http://localhost:8080/disciplines"
 
 export async function DELETE(
     _req: Request,
-    { params }: { params: { id: string } }
+    context: { params: Promise<{ id: string }> }
 ) {
+    const { id } = await context.params
+
     try {
-        const res = await fetch(`http://localhost:8080/disciplines/${params.id}`, {
+        const res = await fetch(`http://localhost:8080/disciplines/${id}`, {
             method: "DELETE",
         })
 

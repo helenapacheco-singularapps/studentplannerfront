@@ -9,7 +9,7 @@ import AddDisciplineModal from "../components/AddDisciplineModal"
 import Image from "next/image"
 import { useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { addDiscipline, deleteDiscipline, getDisciplines, type Discipline } from "../services/api"
+import { addDiscipline, getDisciplines, deleteDiscipline, type Discipline } from "../services/api"
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -48,11 +48,12 @@ export default function DashboardPage() {
       alert("Erro ao adicionar disciplina. Tente novamente.")
     },
   })
+
+  // ✅ NOVO: mutation de DELETE
   const deleteMutation = useMutation({
     mutationFn: deleteDiscipline,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["disciplines"] })
-      setIsDeleteModalOpen(false)
       setIsSuccessModalOpen(true)
     },
     onError: () => {
@@ -74,7 +75,7 @@ export default function DashboardPage() {
     setIsDeleteModalOpen(true)
   }
 
-  // ✅ CORRETO: usa status do backend
+  // ✅ filtro correto com status do backend
   const inProgress = disciplines?.filter(
     (d) => d.status === "EM_ANDAMENTO"
   )
@@ -132,12 +133,10 @@ export default function DashboardPage() {
       </div>
 
       <div className="flex mt-6 ml-16 gap-10">
-
         <div className="w-100 h-60 rounded-xl p-8 border-2 border-pink flex flex-col justify-between">
           <h3 className="text-xl font-semibold text-pink leading-snug">
             Visualizar todas as disciplinas do curso e seu status
           </h3>
-
           <div className="flex justify-center">
             <button
               onClick={() => router.push("/disciplines")}
@@ -154,7 +153,6 @@ export default function DashboardPage() {
           </h3>
 
           <div className="flex gap-6 flex-wrap">
-
             {planned?.map((disc) => (
               <DisciplineCard
                 key={disc.id}
@@ -164,10 +162,8 @@ export default function DashboardPage() {
                 onDelete={handleDelete}
               />
             ))}
-
           </div>
         </div>
-
       </div>
 
       <EditDisciplineModal
@@ -180,11 +176,16 @@ export default function DashboardPage() {
         isOpen={isDeleteModalOpen}
         isSuccessOpen={isSuccessModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
+
+        // ✅ AQUI TÁ O FIX DO DELETE
         onConfirm={() => {
-          if (selectedDiscipline) {
-            deleteMutation.mutate(selectedDiscipline.id)
-          }
+          if (!selectedDiscipline) return
+
+          deleteMutation.mutate(selectedDiscipline.id)
+
+          setIsDeleteModalOpen(false)
         }}
+
         onSuccessClose={() => setIsSuccessModalOpen(false)}
       />
 
