@@ -1,12 +1,42 @@
+"use client"
+
 import { X } from "lucide-react"
+import { useState } from "react"
 
 type Props = {
     isOpen: boolean
     onClose: () => void
+    onSave: (data: {
+        name: string
+        status: string
+
+    }) => void
 }
 
-export default function AddDisciplineModal({ isOpen, onClose }: Props) {
+export default function AddDisciplineModal({ isOpen, onClose, onSave }: Props) {
+    const [name, setName] = useState("")
+    const [status, setStatus] = useState("")
+
     if (!isOpen) return null
+
+    function handleSave() {
+        if (!name || !status) {
+            alert("Preencha todos os campos")
+            return
+        }
+
+        onSave({
+            name,
+            status:
+                status === "andamento"
+                    ? "EM_ANDAMENTO"
+                    : "PLANEJADA",
+        })
+
+        setName("")
+        setStatus("")
+        onClose()
+    }
 
     return (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
@@ -28,17 +58,25 @@ export default function AddDisciplineModal({ isOpen, onClose }: Props) {
 
                     <div>
                         <p className="text-sm mb-1">Nome da disciplina</p>
-                        <input className="bg-gray-100 rounded p-2 w-full" />
+                        <input
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            className="bg-gray-100 rounded p-2 w-full"
+                        />
                     </div>
 
-                    <div>
-                        <p className="text-sm mb-1">Quantidade de créditos</p>
-                        <input className="bg-gray-100 rounded p-2 w-full" />
-                    </div>
 
                     <div>
-                        <p className="text-sm mb-1">Em qual semestre irá cursar</p>
-                        <input className="bg-gray-100 rounded p-2 w-full" />
+                        <p className="text-sm mb-1">Status da disciplina</p>
+                        <select
+                            value={status}
+                            onChange={(e) => setStatus(e.target.value)}
+                            className="bg-gray-100 rounded p-2 w-full"
+                        >
+                            <option value="">Selecione</option>
+                            <option value="andamento">Em andamento</option>
+                            <option value="planejado">Planejado</option>
+                        </select>
                     </div>
 
                 </div>
@@ -53,7 +91,7 @@ export default function AddDisciplineModal({ isOpen, onClose }: Props) {
                     </button>
 
                     <button
-                        onClick={onClose}
+                        onClick={handleSave}
                         className="bg-pink text-white px-4 py-2 rounded"
                     >
                         Save

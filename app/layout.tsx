@@ -1,9 +1,8 @@
-//define infos da page
 import type { Metadata } from "next";
-//otimização das fontes do next
 import { Geist, Geist_Mono, Montserrat } from "next/font/google";
 import Image from "next/image";
 import "./globals.css";
+import Providers from "./provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,19 +35,23 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white min-h-screen`}
       >
 
-        <div
-          className={`${montserrat.className} bg-pinkly px-10 py-1 flex items-center`}
-        >
-          <Image
-            src="/logo.h.png"
-            alt="Student Planner"
-            width={150}
-            height={100}
-            className="h-25 w-37.5"
-          />
-        </div>
+        <Providers>
 
-        {children}
+          <div
+            className={`${montserrat.className} bg-pinkly px-10 py-1 flex items-center`}
+          >
+            <Image
+              src="/logo.h.png"
+              alt="Student Planner"
+              width={150}
+              height={100}
+              className="h-25 w-37.5"
+            />
+          </div>
+
+          {children}
+
+        </Providers>
 
       </body>
     </html>

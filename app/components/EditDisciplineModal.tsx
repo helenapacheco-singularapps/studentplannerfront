@@ -1,11 +1,11 @@
 import { X } from "lucide-react"
+import { Discipline } from "../services/api"
 
 type Props = {
     isOpen: boolean
-    discipline: string | null
+    discipline: Discipline | null
     onClose: () => void
 }
-
 export default function EditDisciplineModal({ isOpen, discipline, onClose }: Props) {
     if (!isOpen) return null
 
@@ -22,7 +22,7 @@ export default function EditDisciplineModal({ isOpen, discipline, onClose }: Pro
                 </button>
 
                 <h2 className="text-2xl font-semibold text-pink mb-6">
-                    {discipline}
+                    {discipline?.name}
                 </h2>
 
                 <div className="flex flex-col gap-4">

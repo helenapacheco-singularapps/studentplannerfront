@@ -6,18 +6,14 @@ import DisciplineCard from "../components/DisciplineCard"
 import EditDisciplineModal from "../components/EditDisciplineModal"
 import DeleteDisciplineModal from "../components/DeleteDisciplineModal"
 import AddDisciplineModal from "../components/AddDisciplineModal"
-import { useState } from "react"
 import Image from "next/image"
+import { useState } from "react"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { addDiscipline, deleteDiscipline, getDisciplines, type Discipline } from "../services/api"
 
 export default function DashboardPage() {
   const router = useRouter()
-
-  const [selectedDiscipline, setSelectedDiscipline] = useState<string | null>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
-  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+  const queryClient = useQueryClient()
 
   const [nickname] = useState(() => {
     if (typeof window === "undefined") return "Nena"
@@ -31,25 +27,66 @@ export default function DashboardPage() {
     return profile.email || "nenacpacheco07@gmail.com"
   })
 
+  const [selectedDiscipline, setSelectedDiscipline] = useState<Discipline | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+
+  const { data: disciplines, isLoading, error } = useQuery({
+    queryKey: ["disciplines"],
+    queryFn: getDisciplines,
+  })
+
+  const addMutation = useMutation({
+    mutationFn: addDiscipline,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["disciplines"] })
+      setIsAddModalOpen(false)
+    },
+    onError: () => {
+      alert("Erro ao adicionar disciplina. Tente novamente.")
+    },
+  })
+  const deleteMutation = useMutation({
+    mutationFn: deleteDiscipline,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["disciplines"] })
+      setIsDeleteModalOpen(false)
+      setIsSuccessModalOpen(true)
+    },
+    onError: () => {
+      alert("Erro ao deletar disciplina")
+    },
+  })
+
   function goToProfile() {
     router.push("/profile")
   }
 
-  function handleEdit(name: string) {
-    setSelectedDiscipline(name)
+  function handleEdit(discipline: Discipline) {
+    setSelectedDiscipline(discipline)
     setIsModalOpen(true)
   }
 
-  function handleDelete(name: string) {
-    setSelectedDiscipline(name)
+  function handleDelete(discipline: Discipline) {
+    setSelectedDiscipline(discipline)
     setIsDeleteModalOpen(true)
   }
+
+  // ✅ CORRETO: usa status do backend
+  const inProgress = disciplines?.filter(
+    (d) => d.status === "EM_ANDAMENTO"
+  )
+
+  const planned = disciplines?.filter(
+    (d) => d.status === "PLANEJADA"
+  )
 
   return (
     <div>
 
       <div className="flex items-center gap-3 mt-6 ml-16">
-
         <Image
           src="/me.jpg"
           alt="Profile"
@@ -58,46 +95,41 @@ export default function DashboardPage() {
           onClick={goToProfile}
           className="rounded-full border-4 border-pink object-cover cursor-pointer"
         />
-
         <div>
-          <h2 className="text-[22px] m-0">
-            Hi, {nickname}!
-          </h2>
-
-          <p className="text-gray-500 text-sm m-0">
-            {email}
-          </p>
+          <h2 className="text-[22px] m-0">Hi, {nickname}!</h2>
+          <p className="text-gray-500 text-sm m-0">{email}</p>
         </div>
-
       </div>
 
-
       <div className="mt-7 ml-16">
-
         <div className="w-247.5 h-60 rounded-xl p-8 border-2 border-pink">
-
           <div className="flex justify-between">
-
             <h3 className="text-xl mb-6 font-semibold text-pink">
               Disciplinas em andamento
             </h3>
-
-            <CirclePlus size={30} className="text-pink cursor-pointer" onClick={() => setIsAddModalOpen(true)} />
+            <CirclePlus
+              size={30}
+              className="text-pink cursor-pointer"
+              onClick={() => setIsAddModalOpen(true)}
+            />
           </div>
 
           <div className="flex gap-6 flex-wrap">
+            {isLoading && <p>Carregando...</p>}
+            {error && <p>Erro ao carregar</p>}
 
-            <DisciplineCard name="Administração da Informação" size="md" onEdit={handleEdit} onDelete={handleDelete} />
-            <DisciplineCard name="Processos de Software" size="md" onEdit={handleEdit} onDelete={handleDelete} />
-            <DisciplineCard name="Projeto e Arquitetura de Software" size="md" onEdit={handleEdit} onDelete={handleDelete} />
-            <DisciplineCard name="Sistemas Operacionais" size="md" onEdit={handleEdit} onDelete={handleDelete} />
-            <DisciplineCard name="Gerenciamento de Projeto de Software" size="md" onEdit={handleEdit} onDelete={handleDelete} />
-            <DisciplineCard name="Psicologia E Gestão De Pessoas Em TI" size="md" onEdit={handleEdit} onDelete={handleDelete} />
-
+            {inProgress?.map((disc) => (
+              <DisciplineCard
+                key={disc.id}
+                discipline={disc}
+                size="md"
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+              />
+            ))}
           </div>
         </div>
       </div>
-
 
       <div className="flex mt-6 ml-16 gap-10">
 
@@ -122,12 +154,17 @@ export default function DashboardPage() {
           </h3>
 
           <div className="flex gap-6 flex-wrap">
-            <DisciplineCard name="Administração da Informação" size="sm" onEdit={handleEdit} onDelete={handleDelete} />
-            <DisciplineCard name="Processos de Software" size="sm" onEdit={handleEdit} onDelete={handleDelete} />
-            <DisciplineCard name="Projeto e Arquitetura de Software" size="sm" onEdit={handleEdit} onDelete={handleDelete} />
-            <DisciplineCard name="Sistemas Operacionais" size="sm" onEdit={handleEdit} onDelete={handleDelete} />
-            <DisciplineCard name="Gerenciamento de Projeto de Software" size="sm" onEdit={handleEdit} onDelete={handleDelete} />
-            <DisciplineCard name="Psicologia E Gestão De Pessoas Em TI" size="sm" onEdit={handleEdit} onDelete={handleDelete} />
+
+            {planned?.map((disc) => (
+              <DisciplineCard
+                key={disc.id}
+                discipline={disc}
+                size="sm"
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+              />
+            ))}
+
           </div>
         </div>
 
@@ -144,15 +181,18 @@ export default function DashboardPage() {
         isSuccessOpen={isSuccessModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={() => {
-          setIsDeleteModalOpen(false)
-          setIsSuccessModalOpen(true)
+          if (selectedDiscipline) {
+            deleteMutation.mutate(selectedDiscipline.id)
+          }
         }}
         onSuccessClose={() => setIsSuccessModalOpen(false)}
       />
 
       <AddDisciplineModal
+        key={isAddModalOpen ? "open" : "closed"}
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
+        onSave={(data) => addMutation.mutate(data)}
       />
 
     </div>
