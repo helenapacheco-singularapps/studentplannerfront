@@ -10,6 +10,7 @@ import Image from "next/image"
 import { useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { addDiscipline, getDisciplines, deleteDiscipline, type Discipline } from "../services/api"
+import { updateDiscipline } from "../services/api"
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -49,7 +50,7 @@ export default function DashboardPage() {
     },
   })
 
-  // ✅ NOVO: mutation de DELETE
+
   const deleteMutation = useMutation({
     mutationFn: deleteDiscipline,
     onSuccess: () => {
@@ -58,6 +59,22 @@ export default function DashboardPage() {
     },
     onError: () => {
       alert("Erro ao deletar disciplina")
+    },
+  })
+
+  const updateMutation = useMutation<
+    unknown,
+    Error,
+    { id: string; data: { status: string } }
+  >({
+    mutationFn: ({ id, data }) => updateDiscipline(id, data),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["disciplines"] })
+    },
+
+    onError: () => {
+      alert("Erro ao atualizar disciplina")
     },
   })
 
@@ -75,7 +92,7 @@ export default function DashboardPage() {
     setIsDeleteModalOpen(true)
   }
 
-  // ✅ filtro correto com status do backend
+
   const inProgress = disciplines?.filter(
     (d) => d.status === "EM_ANDAMENTO"
   )
@@ -148,7 +165,7 @@ export default function DashboardPage() {
         </div>
 
         <div className="w-220 h-60 rounded-xl p-8 border-2 border-pink">
-          <h3 className="text-xl mb-1 font-semibold text-pink">
+          <h3 className="text-xl mb-8 font-semibold text-pink">
             Planejamento disciplinas próximo semestre
           </h3>
 
@@ -170,6 +187,16 @@ export default function DashboardPage() {
         isOpen={isModalOpen}
         discipline={selectedDiscipline}
         onClose={() => setIsModalOpen(false)}
+        onSave={(data) => {
+          if (!selectedDiscipline) return
+
+          updateMutation.mutate({
+            id: selectedDiscipline.id,
+            data,
+          })
+
+          setIsModalOpen(false)
+        }}
       />
 
       <DeleteDisciplineModal
@@ -177,7 +204,7 @@ export default function DashboardPage() {
         isSuccessOpen={isSuccessModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
 
-        // ✅ AQUI TÁ O FIX DO DELETE
+
         onConfirm={() => {
           if (!selectedDiscipline) return
 
