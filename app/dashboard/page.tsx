@@ -6,6 +6,7 @@ import DisciplineCard from "../components/DisciplineCard"
 import EditDisciplineModal from "../components/EditDisciplineModal"
 import DeleteDisciplineModal from "../components/DeleteDisciplineModal"
 import AddDisciplineModal from "../components/AddDisciplineModal"
+import WorkloadCard from "../components/WorkloadCard" 
 import Image from "next/image"
 import { useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
@@ -50,7 +51,6 @@ export default function DashboardPage() {
     },
   })
 
-
   const deleteMutation = useMutation({
     mutationFn: deleteDiscipline,
     onSuccess: () => {
@@ -68,11 +68,9 @@ export default function DashboardPage() {
     { id: string; data: { status: string } }
   >({
     mutationFn: ({ id, data }) => updateDiscipline(id, data),
-
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["disciplines"] })
     },
-
     onError: () => {
       alert("Erro ao atualizar disciplina")
     },
@@ -92,7 +90,6 @@ export default function DashboardPage() {
     setIsDeleteModalOpen(true)
   }
 
-
   const inProgress = disciplines?.filter(
     (d) => d.status === "EM_ANDAMENTO"
   )
@@ -104,6 +101,7 @@ export default function DashboardPage() {
   return (
     <div>
 
+      {/* HEADER */}
       <div className="flex items-center gap-3 mt-6 ml-16">
         <Image
           src="/me.jpg"
@@ -119,8 +117,11 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="mt-7 ml-16">
-        <div className="w-247.5 h-60 rounded-xl p-8 border-2 border-pink">
+
+      <div className="mt-7 ml-16 flex gap-6">
+        
+
+        <div className="w-250 h-60 rounded-xl p-8 border-2 border-pink">
           <div className="flex justify-between">
             <h3 className="text-xl mb-6 font-semibold text-pink">
               Disciplinas em andamento
@@ -147,9 +148,15 @@ export default function DashboardPage() {
             ))}
           </div>
         </div>
+
+
+        <WorkloadCard percentage={42} />
+
       </div>
 
+
       <div className="flex mt-6 ml-16 gap-10">
+        
         <div className="w-100 h-60 rounded-xl p-8 border-2 border-pink flex flex-col justify-between">
           <h3 className="text-xl font-semibold text-pink leading-snug">
             Visualizar todas as disciplinas do curso e seu status
@@ -164,7 +171,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="w-220 h-60 rounded-xl p-8 border-2 border-pink">
+        <div className="w-225 h-60 rounded-xl p-8 border-2 border-pink">
           <h3 className="text-xl mb-8 font-semibold text-pink">
             Planejamento disciplinas próximo semestre
           </h3>
@@ -182,6 +189,7 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+
 
       <EditDisciplineModal
         isOpen={isModalOpen}
@@ -203,16 +211,11 @@ export default function DashboardPage() {
         isOpen={isDeleteModalOpen}
         isSuccessOpen={isSuccessModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
-
-
         onConfirm={() => {
           if (!selectedDiscipline) return
-
           deleteMutation.mutate(selectedDiscipline.id)
-
           setIsDeleteModalOpen(false)
         }}
-
         onSuccessClose={() => setIsSuccessModalOpen(false)}
       />
 

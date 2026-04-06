@@ -16,7 +16,7 @@ export default function DisciplineCard({ discipline, size = "md", onEdit, onDele
       className={
         "bg-gray-200 rounded-xl p-4 flex flex-col " +
         (isSmall
-          ? "w-28 h-28 justify-between" // joga conteúdo pra baixo
+          ? "w-28 h-28 justify-between" 
           : "w-32.5 h-32.5 justify-between")
       }
     >
