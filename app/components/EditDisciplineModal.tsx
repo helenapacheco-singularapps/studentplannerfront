@@ -34,6 +34,7 @@ export default function EditDisciplineModal({
         if (saved) {
             const data = JSON.parse(saved)
 
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setProva1(data.prova1 || "")
             setProva2(data.prova2 || "")
             setTrabalho1(data.trabalho1 || "")

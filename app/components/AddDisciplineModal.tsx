@@ -9,18 +9,19 @@ type Props = {
     onSave: (data: {
         name: string
         status: string
-
+        semester: string
     }) => void
 }
 
 export default function AddDisciplineModal({ isOpen, onClose, onSave }: Props) {
     const [name, setName] = useState("")
     const [status, setStatus] = useState("")
+    const [semester, setSemester] = useState("") 
 
     if (!isOpen) return null
 
     function handleSave() {
-        if (!name || !status) {
+        if (!name || !status || !semester) { 
             alert("Preencha todos os campos")
             return
         }
@@ -31,16 +32,17 @@ export default function AddDisciplineModal({ isOpen, onClose, onSave }: Props) {
                 status === "andamento"
                     ? "EM_ANDAMENTO"
                     : "PLANEJADA",
+            semester, 
         })
 
         setName("")
         setStatus("")
+        setSemester("")
         onClose()
     }
 
     return (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
-
             <div className="bg-white rounded-xl p-8 w-125 relative">
 
                 <button
@@ -56,6 +58,7 @@ export default function AddDisciplineModal({ isOpen, onClose, onSave }: Props) {
 
                 <div className="flex flex-col gap-4">
 
+                  
                     <div>
                         <p className="text-sm mb-1">Nome da disciplina</p>
                         <input
@@ -65,6 +68,15 @@ export default function AddDisciplineModal({ isOpen, onClose, onSave }: Props) {
                         />
                     </div>
 
+             <div>
+                        <p className="text-sm mb-1">Semestre</p>
+                        <input
+                            value={semester}
+                            onChange={(e) => setSemester(e.target.value)}
+                            placeholder="Ex: 2026/1"
+                            className="bg-gray-100 rounded p-2 w-full"
+                        />
+                    </div>
 
                     <div>
                         <p className="text-sm mb-1">Status da disciplina</p>
@@ -79,10 +91,12 @@ export default function AddDisciplineModal({ isOpen, onClose, onSave }: Props) {
                         </select>
                     </div>
 
+             
+        
+
                 </div>
 
                 <div className="flex justify-end gap-4 mt-6">
-
                     <button
                         onClick={onClose}
                         className="bg-pinkly px-4 py-2 rounded"
@@ -96,11 +110,9 @@ export default function AddDisciplineModal({ isOpen, onClose, onSave }: Props) {
                     >
                         Save
                     </button>
-
                 </div>
 
             </div>
-
         </div>
     )
 }
