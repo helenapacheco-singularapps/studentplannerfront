@@ -50,6 +50,7 @@ export default function EditDisciplineModal({
             setTrabalho1("")
             setTrabalho2("")
             setRecuperacao("")
+            setSemestre("")
 
 
             setStatus(discipline.status || "")

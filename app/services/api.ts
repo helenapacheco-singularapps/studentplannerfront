@@ -55,22 +55,16 @@ export async function deleteDiscipline(id: string) {
     return true
 }
 export async function updateDiscipline(
-    id: string,
-    data: {
-        status: string
-    }
+  id: string,
+  data: Partial<Discipline>
 ) {
-    const res = await fetch(`/api/disciplines/${id}`, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-    })
+  const res = await fetch(`/api/disciplines/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  })
 
-    if (!res.ok) {
-        throw new Error("Erro ao atualizar disciplina")
-    }
+  if (!res.ok) throw new Error("Erro ao atualizar disciplina")
 
-    return res.json()
+  return res.json()
 }
