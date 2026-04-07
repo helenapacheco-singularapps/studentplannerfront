@@ -2,6 +2,7 @@ export type Discipline = {
     id: string
     name: string
     status: string
+    semester: string
 }
 
 export async function getDisciplines(): Promise<Discipline[]> {
@@ -17,6 +18,7 @@ export async function getDisciplines(): Promise<Discipline[]> {
 export async function addDiscipline(data: {
     name: string
     status: string
+    semester: string
 }) {
     console.log("ENVIANDO:", data)
 

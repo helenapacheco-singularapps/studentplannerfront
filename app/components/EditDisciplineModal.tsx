@@ -24,6 +24,7 @@ export default function EditDisciplineModal({
     const [trabalho2, setTrabalho2] = useState("")
     const [recuperacao, setRecuperacao] = useState("")
     const [status, setStatus] = useState("")
+    const [semestre, setSemestre] = useState("")
 
 
     useEffect(() => {
@@ -34,12 +35,12 @@ export default function EditDisciplineModal({
         if (saved) {
             const data = JSON.parse(saved)
 
-            // eslint-disable-next-line react-hooks/set-state-in-effect
             setProva1(data.prova1 || "")
             setProva2(data.prova2 || "")
             setTrabalho1(data.trabalho1 || "")
             setTrabalho2(data.trabalho2 || "")
             setRecuperacao(data.recuperacao || "")
+            setSemestre(data.semestre || "")
 
 
             setStatus(discipline.status || "")
@@ -56,25 +57,36 @@ export default function EditDisciplineModal({
     }, [discipline])
 
 
-    function handleSave() {
-        if (!discipline) return
-
-
-        localStorage.setItem(
-            `discipline-${discipline.id}`,
-            JSON.stringify({
-                prova1,
-                prova2,
-                trabalho1,
-                trabalho2,
-                recuperacao,
-            })
-        )
-
-        onSave({
-            status,
+   async function handleSave() {
+    if (!discipline) return
+    localStorage.setItem(
+        `discipline-${discipline.id}`,
+        JSON.stringify({
+            prova1,
+            prova2,
+            trabalho1,
+            trabalho2,
+            recuperacao,
         })
+    )
+
+    try {
+
+       const res = await fetch(`/api/disciplines/${discipline.id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ status }) 
+})
+        if (!res.ok) throw new Error("Erro ao atualizar disciplina")
+
+        const updatedDiscipline = await res.json()
+        onSave(updatedDiscipline)
+        onClose()
+    } catch (err) {
+        console.error(err)
+        alert("Não foi possível atualizar a disciplina. Tente novamente.")
     }
+}
 
     if (!isOpen) return null
 
@@ -128,6 +140,13 @@ export default function EditDisciplineModal({
                         onChange={(e) => setRecuperacao(e.target.value)}
                         className="bg-gray-100 rounded p-2"
                         placeholder="Recuperação (se aplicável)"
+                    />
+
+                    <input
+                        value={semestre}
+                        onChange={(e) => setSemestre(e.target.value)}
+                        className="bg-gray-100 rounded p-2"
+                        placeholder="Semestre"
                     />
 
                     <div>

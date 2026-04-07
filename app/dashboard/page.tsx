@@ -196,15 +196,10 @@ export default function DashboardPage() {
         discipline={selectedDiscipline}
         onClose={() => setIsModalOpen(false)}
         onSave={(data) => {
-          if (!selectedDiscipline) return
-
-          updateMutation.mutate({
-            id: selectedDiscipline.id,
-            data,
-          })
-
-          setIsModalOpen(false)
-        }}
+  if (!selectedDiscipline) return
+  updateMutation.mutate({ id: selectedDiscipline.id, data })
+  setIsModalOpen(false)
+}}
       />
 
       <DeleteDisciplineModal

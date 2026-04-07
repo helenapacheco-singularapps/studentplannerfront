@@ -1,62 +1,15 @@
 "use client"
 
-import { get } from "http"
-import { CircleArrowLeft, CircleArrowRight } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { SetStateAction, useEffect, useState } from "react"
-
-const semesters = [
-    {
-        title: "2025/2",
-        subjects: [
-            { name: "Prática Na Áreas II", status: "Concluída" },
-            { name: "Processos de Software", status: "Concluída" },
-            { name: "Projeto e Arquitetura de Software", status: "Concluída" },
-            { name: "Sistemas Operacionais", status: "Concluída" },
-            { name: "Gerenciamento de Projeto de Software", status: "Concluída" },
-            { name: "Psicologia e Gestão de Pessoas", status: "Concluída" },
-        ],
-    },
-    {
-        title: "2026/1",
-        subjects: [
-            { name: "Administração da Informação", status: "Cursando" },
-            { name: "Processos de Software", status: "Cursando" },
-            { name: "Projeto e Arquitetura de Software", status: "Cursando" },
-            { name: "Sistemas Operacionais", status: "Cursando" },
-            { name: "Gerenciamento de Projeto de Software", status: "Cursando" },
-            { name: "Psicologia e Gestão de Pessoas", status: "Cursando" },
-        ],
-    },
-    {
-        title: "2026/2",
-        subjects: [
-            { name: "Administração da Informação", status: "Planejada" },
-            { name: "Processos de Software", status: "Planejada" },
-            { name: "Projeto e Arquitetura de Software", status: "Planejada" },
-            { name: "Sistemas Operacionais", status: "Planejada" },
-            { name: "Gerenciamento de Projeto de Software", status: "Planejada" },
-            { name: "Psicologia e Gestão de Pessoas", status: "Planejada" },
-        ],
-    },
-    {
-        title: "2027/1",
-        subjects: [
-            { name: "Administração da Informação", status: "Planejada" },
-            { name: "Processos de Software", status: "Planejada" },
-            { name: "Projeto e Arquitetura de Software", status: "Planejada" },
-            { name: "Sistemas Operacionais", status: "Planejada" },
-            { name: "Gerenciamento de Projeto de Software", status: "Planejada" },
-            { name: "Psicologia e Gestão de Pessoas", status: "Planejada" },
-        ],
-    },
-]
+import { CircleArrowLeft, CircleArrowRight } from "lucide-react"
+import { useQuery } from "@tanstack/react-query"
+import { getDisciplines, type Discipline } from "../services/api"
 
 function StatusTag({ status }: { status: string }) {
     const styles = {
-        "Concluída": "bg-green-100 text-green-600",
-        "Cursando": "bg-pinkly text-pink",
-        "Planejada": "text-pink border border-pink",
+        "CONCLUIDA": "bg-green-100 text-green-600",
+        "EM_ANDAMENTO": "bg-pinkly text-pink",
+        "PLANEJADA": "text-pink border border-pink",
     }
 
     return (
@@ -68,19 +21,27 @@ function StatusTag({ status }: { status: string }) {
 
 export default function DisciplinesPage() {
     const router = useRouter()
-    const [disciplines, setDisciplines] = useState<SetStateAction<[]>>([])
-    const [loading, setLoading] = useState(false)
 
-    useEffect(() => {
-        async function getDisciplines() {
-            setLoading(true)
+    const { data: disciplines, isLoading, error } = useQuery({
+        queryKey: ["disciplines"],
+        queryFn: getDisciplines,
+    })
 
-            const result = await fetch("api/disciplines")
-            setDisciplines(result)
-            setLoading(false)
-        }
-        getDisciplines()
-    }, [])
+    // Agrupando por semestre
+   const semesters: Record<string, Discipline[]> = disciplines?.reduce(
+  (acc: Record<string, Discipline[]>, d: Discipline) => {
+    const sem = d.semester || "Sem semestre definido";
+    if (!acc[sem]) acc[sem] = [];
+    acc[sem].push(d);
+    return acc;
+  },
+  {} as Record<string, Discipline[]>
+) ?? {};
+
+    if (isLoading) return <p>Carregando disciplinas...</p>
+    if (error) return <p>Erro ao carregar disciplinas.</p>
+
+    const semesterKeys = Object.keys(semesters || {})
 
     return (
         <div className="min-h-screen bg-white flex flex-col">
@@ -91,27 +52,21 @@ export default function DisciplinesPage() {
                     <CircleArrowLeft size={36} />
                 </button>
 
-                {!loading && (
-                    <p>Carregando disciplinas...</p>
-                )}
-                {semesters.map((semester, index) => (
+                {semesterKeys.map((semKey, index) => (
                     <div
                         key={index}
                         className="bg-white border-[1.21px] border-pink rounded-[12.15px] w-75 h-120 p-4 shadow-sm"
                     >
                         <h2 className="text-pink font-semibold mb-4">
-                            {semester.title}
+                            {semKey}
                         </h2>
 
                         <div className="flex flex-col gap-3">
-                            {semester.subjects.map((sub, i) => (
-                                <div key={i} className="flex justify-between items-center text-sm">
-
-
+                            {semesters[semKey].map((sub: Discipline) => (
+                                <div key={sub.id} className="flex justify-between items-center text-sm">
                                     <span className="text-gray-800 font-semibold truncate flex-1 min-w-0 mr-2">
                                         {sub.name}
                                     </span>
-
                                     <StatusTag status={sub.status} />
                                 </div>
                             ))}
@@ -136,6 +91,4 @@ export default function DisciplinesPage() {
 
         </div>
     )
-
-
 }
