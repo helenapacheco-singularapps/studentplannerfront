@@ -2,16 +2,28 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { CircleArrowLeft, CircleArrowRight, Pencil } from "lucide-react"
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import {
+  CircleArrowLeft,
+  CircleArrowRight,
+  CirclePlus,
+  Trash2,
+} from "lucide-react"
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query"
+
+import AddDisciplineModal from "../components/AddDisciplineModal"
+import EditDisciplineModal from "../components/EditDisciplineModal"
+import DeleteDisciplineModal from "../components/DeleteDisciplineModal"
 
 import {
   getDisciplines,
   updateDiscipline,
-  type Discipline
+   deleteDiscipline,
+  type Discipline,
 } from "../services/api"
-
-import EditDisciplineModal from "../components/EditDisciplineModal"
 
 function StatusTag({ status }: { status: string }) {
   const styles = {
@@ -21,7 +33,11 @@ function StatusTag({ status }: { status: string }) {
   }
 
   return (
-    <span className={`text-xs px-2 py-1 rounded ${styles[status as keyof typeof styles]}`}>
+    <span
+      className={`text-xs px-2 py-1 rounded ${
+        styles[status as keyof typeof styles]
+      }`}
+    >
       {status}
     </span>
   )
@@ -31,37 +47,53 @@ export default function DisciplinesPage() {
   const router = useRouter()
   const queryClient = useQueryClient()
 
-  const [selectedDiscipline, setSelectedDiscipline] = useState<Discipline | null>(null)
+  const [selectedDiscipline, setSelectedDiscipline] =
+    useState<Discipline | null>(null)
+
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [isDeleteSuccessOpen, setIsDeleteSuccessOpen] = useState(false)
 
   const { data: disciplines, isLoading, error } = useQuery({
     queryKey: ["disciplines"],
     queryFn: getDisciplines,
   })
 
-
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<Discipline> }) =>
-      updateDiscipline(id, data),
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string
+      data: Partial<Discipline>
+    }) => updateDiscipline(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["disciplines"] })
     },
   })
 
- 
-  const semesters: Record<string, Discipline[]> = disciplines?.reduce(
-    (acc: Record<string, Discipline[]>, d: Discipline) => {
-      const sem = d.semester || "Sem semestre definido"
-      if (!acc[sem]) acc[sem] = []
-      acc[sem].push(d)
-      return acc
-    },
-    {}
-  ) ?? {}
+  const deleteMutation = useMutation({
+  mutationFn: (id: string) => deleteDiscipline(id),
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ["disciplines"] })
+  },
+})
+
+  const semesters: Record<string, Discipline[]> =
+    disciplines?.reduce(
+      (acc: Record<string, Discipline[]>, d: Discipline) => {
+        const sem = d.semester || "Sem semestre definido"
+        if (!acc[sem]) acc[sem] = []
+        acc[sem].push(d)
+        return acc
+      },
+      {}
+    ) ?? {}
 
   if (isLoading) return <p>Carregando disciplinas...</p>
   if (error) return <p>Erro ao carregar disciplinas.</p>
-
 
   const semesterKeys = Object.keys(semesters).sort((a, b) => {
     const [yearA, semA] = a.split("/").map(Number)
@@ -76,10 +108,22 @@ export default function DisciplinesPage() {
     setIsModalOpen(true)
   }
 
+  function handleDelete(discipline: Discipline) {
+    setSelectedDiscipline(discipline)
+    setIsDeleteModalOpen(true)
+  }
+
   return (
     <div className="min-h-screen bg-white flex flex-col">
-      <div className="flex flex-1 items-center justify-center gap-6 px-6">
+      <div className="w-full px-10 pt-4 flex justify-end">
+        <CirclePlus
+          size={35}
+          className="text-pink cursor-pointer hover:scale-110 transition"
+          onClick={() => setIsAddModalOpen(true)}
+        />
+      </div>
 
+      <div className="flex flex-1 items-center justify-center gap-6 px-6">
         <button className="text-pink hover:scale-110 transition">
           <CircleArrowLeft size={36} />
         </button>
@@ -99,17 +143,19 @@ export default function DisciplinesPage() {
                   key={sub.id}
                   className="flex justify-between items-center text-sm"
                 >
-                  <span className="text-gray-800 font-semibold truncate flex-1 min-w-0 mr-2">
+                  <span
+                    onClick={() => handleEdit(sub)}
+                    className="text-gray-800 font-semibold truncate flex-1 min-w-0 mr-2 cursor-pointer hover:underline"
+                  >
                     {sub.name}
                   </span>
 
                   <div className="flex items-center gap-2">
-                  
                     <button
-                      onClick={() => handleEdit(sub)}
+                      onClick={() => handleDelete(sub)}
                       className="text-pink hover:scale-110 transition"
                     >
-                      <Pencil size={16} />
+                      <Trash2 size={16} />
                     </button>
 
                     <StatusTag status={sub.status} />
@@ -147,6 +193,38 @@ export default function DisciplinesPage() {
           })
 
           setIsModalOpen(false)
+        }}
+      />
+
+      <AddDisciplineModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSave={(data) => {
+          updateMutation.mutate({
+            id: "",
+            data,
+          })
+          setIsAddModalOpen(false)
+        }}
+      />
+
+      <DeleteDisciplineModal
+        isOpen={isDeleteModalOpen}
+        isSuccessOpen={isDeleteSuccessOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onSuccessClose={() => setIsDeleteSuccessOpen(false)}
+        onConfirm={() => {
+          if (!selectedDiscipline) return
+
+          deleteMutation.mutate(selectedDiscipline.id, {
+  onSuccess: () => {
+    setIsDeleteModalOpen(false)
+    setIsDeleteSuccessOpen(true)
+  },
+})
+
+          setIsDeleteModalOpen(false)
+          setIsDeleteSuccessOpen(true)
         }}
       />
     </div>

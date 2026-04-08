@@ -87,7 +87,8 @@ export default function AddDisciplineModal({ isOpen, onClose, onSave }: Props) {
                         >
                             <option value="">Selecione</option>
                             <option value="andamento">Em andamento</option>
-                            <option value="planejado">Planejado</option>
+                            <option value="planejada">Planejada</option>
+                            <option value="concluida">Concluída</option>
                         </select>
                     </div>
 
