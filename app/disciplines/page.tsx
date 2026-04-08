@@ -21,7 +21,8 @@ import DeleteDisciplineModal from "../components/DeleteDisciplineModal"
 import {
   getDisciplines,
   updateDiscipline,
-   deleteDiscipline,
+  deleteDiscipline,
+  addDiscipline,
   type Discipline,
 } from "../services/api"
 
@@ -56,6 +57,9 @@ export default function DisciplinesPage() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [isDeleteSuccessOpen, setIsDeleteSuccessOpen] = useState(false)
 
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const ITEMS_PER_PAGE = 4
+
   const { data: disciplines, isLoading, error } = useQuery({
     queryKey: ["disciplines"],
     queryFn: getDisciplines,
@@ -75,11 +79,22 @@ export default function DisciplinesPage() {
   })
 
   const deleteMutation = useMutation({
-  mutationFn: (id: string) => deleteDiscipline(id),
-  onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ["disciplines"] })
-  },
-})
+    mutationFn: (id: string) => deleteDiscipline(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["disciplines"] })
+    },
+  })
+
+  const addMutation = useMutation({
+    mutationFn: addDiscipline,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["disciplines"] })
+      setIsAddModalOpen(false)
+    },
+    onError: () => {
+      alert("Erro ao adicionar disciplina.")
+    },
+  })
 
   const semesters: Record<string, Discipline[]> =
     disciplines?.reduce(
@@ -103,6 +118,11 @@ export default function DisciplinesPage() {
     return semA - semB
   })
 
+  const visibleSemesters = semesterKeys.slice(
+    currentIndex,
+    currentIndex + ITEMS_PER_PAGE
+  )
+
   function handleEdit(discipline: Discipline) {
     setSelectedDiscipline(discipline)
     setIsModalOpen(true)
@@ -124,14 +144,24 @@ export default function DisciplinesPage() {
       </div>
 
       <div className="flex flex-1 items-center justify-center gap-6 px-6">
-        <button className="text-pink hover:scale-110 transition">
+        
+        {/* ⬅️ */}
+        <button
+          onClick={() =>
+            setCurrentIndex((prev) =>
+              Math.max(prev - ITEMS_PER_PAGE, 0)
+            )
+          }
+          disabled={currentIndex === 0}
+          className="text-pink hover:scale-110 transition disabled:opacity-30"
+        >
           <CircleArrowLeft size={36} />
         </button>
 
-        {semesterKeys.map((semKey, index) => (
+        {visibleSemesters.map((semKey, index) => (
           <div
             key={index}
-            className="bg-white border-[1.21px] border-pink rounded-[12.15px] w-75 h-120 p-4 shadow-sm"
+            className="bg-white border border-pink rounded-xl w-72 h-120 p-4 shadow-sm"
           >
             <h2 className="text-pink font-semibold mb-4">
               {semKey}
@@ -145,7 +175,7 @@ export default function DisciplinesPage() {
                 >
                   <span
                     onClick={() => handleEdit(sub)}
-                    className="text-gray-800 font-semibold truncate flex-1 min-w-0 mr-2 cursor-pointer hover:underline"
+                    className="text-gray-800 font-semibold truncate flex-1 mr-2 cursor-pointer hover:underline"
                   >
                     {sub.name}
                   </span>
@@ -166,12 +196,23 @@ export default function DisciplinesPage() {
           </div>
         ))}
 
-        <button className="text-pink hover:scale-110 transition">
+        <button
+          onClick={() =>
+            setCurrentIndex((prev) =>
+              Math.min(
+                prev + ITEMS_PER_PAGE,
+                Math.max(0, semesterKeys.length - ITEMS_PER_PAGE)
+              )
+            )
+          }
+          disabled={currentIndex + ITEMS_PER_PAGE >= semesterKeys.length}
+          className="text-pink hover:scale-110 transition disabled:opacity-30"
+        >
           <CircleArrowRight size={36} />
         </button>
       </div>
 
-      <div className="flex justify-center pb-15">
+      <div className="flex justify-center pb-10">
         <button
           onClick={() => router.push("/dashboard")}
           className="bg-pink text-white px-10 py-2 rounded-lg"
@@ -179,6 +220,7 @@ export default function DisciplinesPage() {
           Voltar ao Dashboard
         </button>
       </div>
+
 
       <EditDisciplineModal
         isOpen={isModalOpen}
@@ -199,13 +241,7 @@ export default function DisciplinesPage() {
       <AddDisciplineModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
-        onSave={(data) => {
-          updateMutation.mutate({
-            id: "",
-            data,
-          })
-          setIsAddModalOpen(false)
-        }}
+        onSave={(data) => addMutation.mutate(data)}
       />
 
       <DeleteDisciplineModal
@@ -217,14 +253,11 @@ export default function DisciplinesPage() {
           if (!selectedDiscipline) return
 
           deleteMutation.mutate(selectedDiscipline.id, {
-  onSuccess: () => {
-    setIsDeleteModalOpen(false)
-    setIsDeleteSuccessOpen(true)
-  },
-})
-
-          setIsDeleteModalOpen(false)
-          setIsDeleteSuccessOpen(true)
+            onSuccess: () => {
+              setIsDeleteModalOpen(false)
+              setIsDeleteSuccessOpen(true)
+            },
+          })
         }}
       />
     </div>

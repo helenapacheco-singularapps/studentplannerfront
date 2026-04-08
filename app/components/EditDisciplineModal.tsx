@@ -68,6 +68,7 @@ export default function EditDisciplineModal({
             trabalho1,
             trabalho2,
             recuperacao,
+            semestre
         })
     )
 
