@@ -20,26 +20,33 @@ export default function AddDisciplineModal({ isOpen, onClose, onSave }: Props) {
 
     if (!isOpen) return null
 
-    function handleSave() {
-        if (!name || !status || !semester) { 
-            alert("Preencha todos os campos")
-            return
-        }
-
-        onSave({
-            name,
-            status:
-                status === "andamento"
-                    ? "EM_ANDAMENTO"
-                    : "PLANEJADA",
-            semester, 
-        })
-
-        setName("")
-        setStatus("")
-        setSemester("")
-        onClose()
+   function handleSave() {
+    if (!name || !status || !semester) {
+        alert("Preencha todos os campos")
+        return
     }
+
+    let formattedStatus = ""
+
+    if (status === "andamento") {
+        formattedStatus = "EM_ANDAMENTO"
+    } else if (status === "planejada") {
+        formattedStatus = "PLANEJADA"
+    } else if (status === "concluida") {
+        formattedStatus = "CONCLUIDA"
+    }
+
+    onSave({
+        name,
+        status: formattedStatus,
+        semester,
+    })
+
+    setName("")
+    setStatus("")
+    setSemester("")
+    onClose()
+}
 
     return (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
