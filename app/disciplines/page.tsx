@@ -65,18 +65,29 @@ export default function DisciplinesPage() {
     queryFn: getDisciplines,
   })
 
-  const updateMutation = useMutation({
-    mutationFn: ({
-      id,
-      data,
-    }: {
-      id: string
-      data: Partial<Discipline>
-    }) => updateDiscipline(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["disciplines"] })
-    },
-  })
+ const updateMutation = useMutation({
+  mutationFn: ({
+    id,
+    data,
+  }: {
+    id: string
+    data: Partial<Discipline>
+  }) => updateDiscipline(id, data),
+
+  onSuccess: (_, variables) => {
+    queryClient.setQueryData(["disciplines"], (old: Discipline[] = []) => {
+      return old.map((d) => {
+        if (d.id !== variables.id) return d
+
+        return {
+          ...d,
+          ...variables.data,
+          semester: variables.data.semester?.trim() ?? d.semester,
+        }
+      })
+    })
+  },
+})
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteDiscipline(id),
@@ -99,7 +110,7 @@ export default function DisciplinesPage() {
   const semesters: Record<string, Discipline[]> =
     disciplines?.reduce(
       (acc: Record<string, Discipline[]>, d: Discipline) => {
-        const sem = d.semester || "Sem semestre definido"
+        const sem = d.semester?.trim() || "Sem semestre definido"
         if (!acc[sem]) acc[sem] = []
         acc[sem].push(d)
         return acc
@@ -145,7 +156,6 @@ export default function DisciplinesPage() {
 
       <div className="flex flex-1 items-center justify-center gap-6 px-6">
         
-        {/* ⬅️ */}
         <button
           onClick={() =>
             setCurrentIndex((prev) =>
@@ -226,16 +236,23 @@ export default function DisciplinesPage() {
         isOpen={isModalOpen}
         discipline={selectedDiscipline}
         onClose={() => setIsModalOpen(false)}
-        onSave={(data) => {
-          if (!selectedDiscipline) return
+       onSave={(data) => {
+        console.log("Data to save:", data)
+  if (!selectedDiscipline) return
 
-          updateMutation.mutate({
-            id: selectedDiscipline.id,
-            data,
-          })
-
-          setIsModalOpen(false)
-        }}
+  updateMutation.mutate(
+    {
+      id: selectedDiscipline.id,
+      data,
+    },
+    {
+      onSuccess: () => {
+        console.log("Disciplina atualizada com sucesso!")
+        setIsModalOpen(false)
+      },
+    }
+  )
+}}
       />
 
       <AddDisciplineModal

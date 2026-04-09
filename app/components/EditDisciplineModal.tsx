@@ -8,7 +8,7 @@ type Props = {
     isOpen: boolean
     discipline: Discipline | null
     onClose: () => void
-    onSave: (data: { status: string }) => void
+    onSave: (data: { status: string; semester: string }) => void
 }
 
 export default function EditDisciplineModal({
@@ -27,36 +27,33 @@ export default function EditDisciplineModal({
     const [semestre, setSemestre] = useState("")
 
 
-    useEffect(() => {
-        if (!discipline) return
+   useEffect(() => {
+  if (!discipline) return
 
-        const saved = localStorage.getItem(`discipline-${discipline.id}`)
+  const saved = localStorage.getItem(`discipline-${discipline.id}`)
+  setSemestre(discipline.semester || "")
+  setStatus(discipline.status || "")
 
-        if (saved) {
-            const data = JSON.parse(saved)
+  if (saved) {
+    const data = JSON.parse(saved)
 
-            setProva1(data.prova1 || "")
-            setProva2(data.prova2 || "")
-            setTrabalho1(data.trabalho1 || "")
-            setTrabalho2(data.trabalho2 || "")
-            setRecuperacao(data.recuperacao || "")
-            setSemestre(data.semestre || "")
+    setProva1(data.prova1 || "")
+    setProva2(data.prova2 || "")
+    setTrabalho1(data.trabalho1 || "")
+    setTrabalho2(data.trabalho2 || "")
+    setRecuperacao(data.recuperacao || "")
 
-
-            setStatus(discipline.status || "")
-        } else {
-            setProva1("")
-            setProva2("")
-            setTrabalho1("")
-            setTrabalho2("")
-            setRecuperacao("")
-            setSemestre("")
-
-
-            setStatus(discipline.status || "")
-        }
-    }, [discipline])
-
+    if (data.semestre) {
+      setSemestre(data.semestre)
+    }
+  } else {
+    setProva1("")
+    setProva2("")
+    setTrabalho1("")
+    setTrabalho2("")
+    setRecuperacao("")
+  }
+}, [discipline])
 
    async function handleSave() {
     if (!discipline) return
@@ -77,12 +74,17 @@ export default function EditDisciplineModal({
        const res = await fetch(`/api/disciplines/${discipline.id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ status }) 
+    body: JSON.stringify({
+    status,
+    semester: semestre
+})
 })
         if (!res.ok) throw new Error("Erro ao atualizar disciplina")
 
-        const updatedDiscipline = await res.json()
-        onSave(updatedDiscipline)
+       onSave({
+  status,
+  semester: semestre
+})
         onClose()
     } catch (err) {
         console.error(err)
