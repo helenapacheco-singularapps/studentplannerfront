@@ -26,14 +26,16 @@ export default function AddDisciplineModal({ isOpen, onClose, onSave }: Props) {
             return
         }
 
-        onSave({
-            name,
-            status:
-                status === "andamento"
-                    ? "EM_ANDAMENTO"
-                    : "PLANEJADA",
-            semester, 
-        })
+      onSave({
+  name,
+  status:
+    status === "andamento"
+      ? "EM_ANDAMENTO"
+      : status === "concluida"
+      ? "CONCLUIDA"
+      : "PLANEJADA",
+  semester,
+})
 
         setName("")
         setStatus("")

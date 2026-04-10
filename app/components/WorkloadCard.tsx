@@ -1,5 +1,9 @@
 type Props = {
-  percentage?: number
+  percentage: number
+  completed: number
+  inProgress: number
+  planned: number
+  remaining: number
 }
 
 export default function WorkloadCard({ percentage = 42 }: Props) {
@@ -12,11 +16,11 @@ export default function WorkloadCard({ percentage = 42 }: Props) {
       <div className="flex justify-center items-center">
         <div className="relative w-40 h-20 overflow-hidden">
         
-          <div className="absolute w-40 h-40 rounded-full border-16 border-pinkly top-0 left-0"></div>
+          <div className="absolute w-40 h-40 rounded-full border-16 border-pink top-0 left-0"></div>
 
 
           <div
-            className="absolute w-40 h-40 rounded-full border-16 border-pink top-0 left-0"
+            className="absolute w-40 h-40 rounded-full border-16 border-pinkly top-0 left-0"
             style={{
               clipPath: "inset(0 0 50% 0)",
               transform: `rotate(${(percentage / 100) * 180}deg)`,

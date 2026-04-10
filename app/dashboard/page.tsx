@@ -46,13 +46,13 @@ export default function DashboardPage() {
   const [nickname] = useState(() => {
     if (typeof window === "undefined") return "Nena"
     const profile = JSON.parse(localStorage.getItem("profile") || "{}")
-    return profile.nickname || "Nena"
+    return profile.nickname 
   })
 
   const [email] = useState(() => {
-    if (typeof window === "undefined") return "email@email.com"
+    if (typeof window === "undefined") return "nenacpacheco07@gmail.com"
     const profile = JSON.parse(localStorage.getItem("profile") || "{}")
-    return profile.email || "email@email.com"
+    return profile.email 
   })
 
   const [selectedDiscipline, setSelectedDiscipline] =
@@ -128,6 +128,24 @@ export default function DashboardPage() {
     )
   })
 
+  const TOTAL_DISCIPLINES = 56
+
+const completed = disciplines?.filter(
+  (d) => d.status === "CONCLUIDA"
+).length || 0
+
+const inProgressCount = disciplines?.filter(
+  (d) => d.status === "EM_ANDAMENTO"
+).length || 0
+
+const plannedCount = disciplines?.filter(
+  (d) => d.status === "PLANEJADA"
+).length || 0
+
+const remaining = TOTAL_DISCIPLINES - completed
+
+const progress = Math.round((completed / TOTAL_DISCIPLINES) * 100)
+
   return (
     <div>
       <div className="flex items-center gap-3 mt-6 ml-16">
@@ -180,7 +198,13 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <WorkloadCard percentage={42} />
+      <WorkloadCard
+  percentage={progress}
+  completed={completed}
+  inProgress={inProgressCount}
+  planned={plannedCount}
+  remaining={remaining}
+/>
       </div>
 
       <div className="flex mt-6 ml-16 gap-10">
