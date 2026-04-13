@@ -80,7 +80,13 @@ export default function EditDisciplineModal({
 })
 })
         if (!res.ok) throw new Error("Erro ao atualizar disciplina")
+const statusChanged = status !== discipline.status
+const semesterChanged = semestre !== discipline.semester
 
+if (statusChanged && !semesterChanged) {
+  alert("Você precisa mudar o semestre ao alterar o status")
+  return
+}
        onSave({
   status,
   semester: semestre
