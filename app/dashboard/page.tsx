@@ -8,7 +8,7 @@ import DeleteDisciplineModal from "../components/DeleteDisciplineModal"
 import AddDisciplineModal from "../components/AddDisciplineModal"
 import WorkloadCard from "../components/WorkloadCard"
 import Image from "next/image"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   addDiscipline,
@@ -18,17 +18,8 @@ import {
   updateDiscipline,
 } from "../services/api"
 
-function getProfile() {
-  if (typeof window !== "undefined") {
-    const saved = localStorage.getItem("profile")
-    return saved ? JSON.parse(saved) : {}
-  }
-  return {}
-}
-
 function getNextSemester(current: string) {
   const [year, sem] = current.split("/").map(Number)
-
   if (sem === 1) return `${year}/2`
   return `${year + 1}/1`
 }
@@ -37,23 +28,25 @@ export default function DashboardPage() {
   const router = useRouter()
   const queryClient = useQueryClient()
 
-  const profile = getProfile()
-  const currentSemester = profile.semester
+
+  const [profile, setProfile] = useState<Record<string, unknown> | null>(null)
+  const [nickname, setNickname] = useState("Nena")
+  const [email, setEmail] = useState("")
+
+  useEffect(() => {
+    const saved = localStorage.getItem("profile")
+    const parsed = saved ? JSON.parse(saved) : {}
+
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setProfile(parsed)
+    setNickname(parsed.nickname || "Nena")
+    setEmail(parsed.email || "")
+  }, [])
+
+  const currentSemester = profile?.semester as string | undefined
   const nextSemester = currentSemester
     ? getNextSemester(currentSemester)
     : null
-
-  const [nickname] = useState(() => {
-    if (typeof window === "undefined") return "Nena"
-    const profile = JSON.parse(localStorage.getItem("profile") || "{}")
-    return profile.nickname 
-  })
-
-  const [email] = useState(() => {
-    if (typeof window === "undefined") return "nenacpacheco07@gmail.com"
-    const profile = JSON.parse(localStorage.getItem("profile") || "{}")
-    return profile.email 
-  })
 
   const [selectedDiscipline, setSelectedDiscipline] =
     useState<Discipline | null>(null)
@@ -109,6 +102,10 @@ export default function DashboardPage() {
     setIsDeleteModalOpen(true)
   }
 
+  
+  if (!profile) {
+    return <p className="mt-10 ml-16">Carregando perfil...</p>
+  }
 
   const inProgress = disciplines?.filter((d) => {
     if (!currentSemester) return d.status === "EM_ANDAMENTO"
@@ -130,21 +127,17 @@ export default function DashboardPage() {
 
   const TOTAL_DISCIPLINES = 56
 
-const completed = disciplines?.filter(
-  (d) => d.status === "CONCLUIDA"
-).length || 0
+  const completed =
+    disciplines?.filter((d) => d.status === "CONCLUIDA").length || 0
 
-const inProgressCount = disciplines?.filter(
-  (d) => d.status === "EM_ANDAMENTO"
-).length || 0
+  const inProgressCount =
+    disciplines?.filter((d) => d.status === "EM_ANDAMENTO").length || 0
 
-const plannedCount = disciplines?.filter(
-  (d) => d.status === "PLANEJADA"
-).length || 0
+  const plannedCount =
+    disciplines?.filter((d) => d.status === "PLANEJADA").length || 0
 
-const remaining = TOTAL_DISCIPLINES - completed
-
-const progress = Math.round((completed / TOTAL_DISCIPLINES) * 100)
+  const remaining = TOTAL_DISCIPLINES - completed
+  const progress = Math.round((completed / TOTAL_DISCIPLINES) * 100)
 
   return (
     <div>
@@ -198,13 +191,13 @@ const progress = Math.round((completed / TOTAL_DISCIPLINES) * 100)
           </div>
         </div>
 
-      <WorkloadCard
-  percentage={progress}
-  completed={completed}
-  inProgress={inProgressCount}
-  planned={plannedCount}
-  remaining={remaining}
-/>
+        <WorkloadCard
+          percentage={progress}
+          completed={completed}
+          inProgress={inProgressCount}
+          planned={plannedCount}
+          remaining={remaining}
+        />
       </div>
 
       <div className="flex mt-6 ml-16 gap-10">
