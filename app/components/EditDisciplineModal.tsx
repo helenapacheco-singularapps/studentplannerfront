@@ -25,23 +25,14 @@ export default function EditDisciplineModal({
     const [recuperacao, setRecuperacao] = useState("")
     const [status, setStatus] = useState("")
     const [semestre, setSemestre] = useState("")
-    const [initialStatus, setInitialStatus] = useState("")
-const [initialSemestre, setInitialSemestre] = useState("")
 
 
    useEffect(() => {
   if (!discipline) return
 
   const saved = localStorage.getItem(`discipline-${discipline.id}`)
-
-  const originalStatus = discipline.status || ""
-  const originalSemester = discipline.semester || ""
-
-  setStatus(originalStatus)
-  setSemestre(originalSemester)
-
-  setInitialStatus(originalStatus)
-  setInitialSemestre(originalSemester)
+  setSemestre(discipline.semester || "")
+  setStatus(discipline.status || "")
 
   if (saved) {
     const data = JSON.parse(saved)
@@ -63,52 +54,48 @@ const [initialSemestre, setInitialSemestre] = useState("")
     setRecuperacao("")
   }
 }, [discipline])
+
    async function handleSave() {
-  if (!discipline) return
+    if (!discipline) return
+    localStorage.setItem(
+        `discipline-${discipline.id}`,
+        JSON.stringify({
+            prova1,
+            prova2,
+            trabalho1,
+            trabalho2,
+            recuperacao,
+            semestre
+        })
+    )
 
- 
-  if (
-    status !== initialStatus &&
-    semestre === initialSemestre
-  ) {
-    alert("Você precisa alterar o semestre junto ao status da disciplina.")
-    return
-  }
+    try {
 
-  localStorage.setItem(
-    `discipline-${discipline.id}`,
-    JSON.stringify({
-      prova1,
-      prova2,
-      trabalho1,
-      trabalho2,
-      recuperacao,
-      semestre
-    })
-  )
+       const res = await fetch(`/api/disciplines/${discipline.id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+    status,
+    semester: semestre
+})
+})
+        if (!res.ok) throw new Error("Erro ao atualizar disciplina")
+const statusChanged = status !== discipline.status
+const semesterChanged = semestre !== discipline.semester
 
-  try {
-    const res = await fetch(`/api/disciplines/${discipline.id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        status,
-        semester: semestre
-      })
-    })
-
-    if (!res.ok) throw new Error("Erro ao atualizar disciplina")
-
-    onSave({
-      status,
-      semester: semestre
-    })
-
-    onClose()
-  } catch (err) {
-    console.error(err)
-    alert("Não foi possível atualizar a disciplina. Tente novamente.")
-  }
+if (statusChanged && !semesterChanged) {
+  alert("Você precisa mudar o semestre ao alterar o status")
+  return
+}
+       onSave({
+  status,
+  semester: semestre
+})
+        onClose()
+    } catch (err) {
+        console.error(err)
+        alert("Não foi possível atualizar a disciplina. Tente novamente.")
+    }
 }
 
     if (!isOpen) return null
