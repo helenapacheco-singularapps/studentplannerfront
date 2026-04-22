@@ -28,7 +28,6 @@ export default function DashboardPage() {
   const router = useRouter()
   const queryClient = useQueryClient()
 
-
   const [profile, setProfile] = useState<Record<string, unknown> | null>(null)
   const [nickname, setNickname] = useState("Nena")
   const [email, setEmail] = useState("")
@@ -77,14 +76,28 @@ export default function DashboardPage() {
     },
   })
 
-  const updateMutation = useMutation<
-    unknown,
-    Error,
-    { id: string; data: { status: string } }
-  >({
-    mutationFn: ({ id, data }) => updateDiscipline(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["disciplines"] })
+  // ✅ CORRIGIDO AQUI
+  const updateMutation = useMutation({
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string
+      data: Partial<Discipline>
+    }) => updateDiscipline(id, data),
+
+    onSuccess: (_, variables) => {
+      queryClient.setQueryData(["disciplines"], (old: Discipline[] = []) => {
+        return old.map((d) => {
+          if (d.id !== variables.id) return d
+
+          return {
+            ...d,
+            ...variables.data,
+            semester: variables.data.semester?.trim() ?? d.semester,
+          }
+        })
+      })
     },
   })
 
@@ -102,17 +115,17 @@ export default function DashboardPage() {
     setIsDeleteModalOpen(true)
   }
 
-  
   if (!profile) {
     return <p className="mt-10 ml-16">Carregando perfil...</p>
   }
 
+  // ✅ TRIM PRA EVITAR BUG
   const inProgress = disciplines?.filter((d) => {
     if (!currentSemester) return d.status === "EM_ANDAMENTO"
 
     return (
       d.status === "EM_ANDAMENTO" &&
-      d.semester === currentSemester
+      d.semester?.trim() === currentSemester.trim()
     )
   })
 
@@ -121,7 +134,7 @@ export default function DashboardPage() {
 
     return (
       d.status === "PLANEJADA" &&
-      d.semester === nextSemester
+      d.semester?.trim() === nextSemester?.trim()
     )
   })
 
@@ -240,10 +253,12 @@ export default function DashboardPage() {
         onClose={() => setIsModalOpen(false)}
         onSave={(data) => {
           if (!selectedDiscipline) return
+
           updateMutation.mutate({
             id: selectedDiscipline.id,
             data,
           })
+
           setIsModalOpen(false)
         }}
       />
